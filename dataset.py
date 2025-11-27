@@ -2,6 +2,8 @@ import random
 import datetime, timedelta
 import numpy as np
 import pandas as pd
+import seaborn as sns 
+import matplotlib.pyplot as plt
 
 def dsa_gera_dados_ficticios (num_registro = 600):
 
@@ -55,4 +57,21 @@ def dsa_gera_dados_ficticios (num_registro = 600):
 
     return pd.DataFrame(dados_vendas)
 
+df_dados = dsa_gera_dados_ficticios(400)
 
+df_dados['Data_Pedido'] = pd.to_datetime(df_dados['Data_Pedido'])
+df_dados ['Faturamento'] = df_dados ['Preco_unitario'] * df_dados ['Quantidade']
+df_dados['Status_entrega'] = df_dados ['Estado'].apply(lambda estado: 'Rapido' if estado in ['SP' 'RJ' 'MG' else 'normal'])
+
+top_10_produtos = df_dados.groupby('Nome_Produto')['Quantidade'].sum().sort_values(asceding=False).head(10)
+
+sns.set_style('whitegrid')
+plt.figure(figsize = (12, 7))
+
+top_10_produtos.sort_values(ascending = True).plot(kind = 'barh', color = 'skyblue')
+
+plt.title ('Top 10 Produtos mais vendidos')
+plt.xlabel('Quantidade vendida', fontsize = 12)
+plt.ylabel('Nome do produto', fontsize = 12)
+plt.tight_layout()
+plt.show()
